@@ -35,6 +35,6 @@ struct RleData
 	}
     
 private:
-    void same(const char*& first, const char*& second, int& currSize);
+    void same(const char*& input, int& currIndex, const size_t inSize);
 };
 

@@ -14,6 +14,17 @@ void Part1Tests()
 	TestFixtureFactory::theInstance().runTests();
 }
 
+std::string getFileExt(const std::string& s) {
+    
+    //Taken from the C++ Cookbook
+    size_t i = s.rfind('.', s.length());
+    if (i != std::string::npos) {
+        return(s.substr(i+1, s.length() - i));
+    }
+    
+    return("");
+}
+
 int main(int argc, char* argv[])
 {
 	if (argc < 2)
@@ -23,8 +34,23 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
+        RleFile rleFile;
 		// TODO: Get the file name from argv[1] and either compress/decompress
+        std::string path = argv[1];
+        std::string ext = getFileExt(path);
+        
+        if(ext == "rl1")
+        {
+            rleFile.ExtractArchive(path);
+        }
+        else
+        {
+            rleFile.CreateArchive(path);
+        }
+        
+        
 	}
 	return 0;
 }
+
 

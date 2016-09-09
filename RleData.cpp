@@ -4,55 +4,45 @@
 void RleData::Compress(const char* input, size_t inSize)
 {
 	// set mSize = 0 and delete mData
-    int currSize = 0;
     int currIndex = 0;
-    const char* first = input;
-    const char* second = nullptr;
     delete[] mData;
     mSize = 0;
     
     mData = new char[inSize*2];
-   
-    //Handle edge cases first
-    if(inSize != 1)
-    {
-        second = &input[1];
-    }
     
-    while(currSize < inSize)
+    while(currIndex < inSize)
     {
         //Handle edge cases first
-        if(inSize == 1)
+        if(currIndex == inSize-1)
         {
             mData[mSize++] = 1;
             mData[mSize] = input[currIndex];
             return;
         }
-       /*
-        if(input[currIndex] != input[currIndex+1])
+        else if(currIndex < inSize-2 && input[currIndex] != input[currIndex+1] && input[currIndex+1] == input[currIndex+2])
         {
             mData[mSize++] = 1;
-            mData[mSize++] = input[currIndex];
-            currIndex++;
-            first++;
-            second++;
+            mData[mSize++] = input[currIndex++];
         }
-        */
-        if(input[currIndex] == input[currIndex+1])
+        else if(input[currIndex] == input[currIndex+1])
         {
-            same(first, second, currSize);
+            same(input, currIndex, inSize);
         }
         else {
             int size = 0;
             char* placeHolder = &mData[mSize];
             mSize++;
-            while(input[currIndex] != input[currIndex+1] && currSize < inSize)
+            while(currIndex < inSize && input[currIndex] != input[currIndex+1] && size < 127)
             {
-                mData[mSize++] = *first;
+                mData[mSize++] = input[currIndex];
                 size++;
-                currSize++;
-                first++;
-                second++;
+                currIndex++;
+                
+                //If last element add it to mData
+                if(currIndex == inSize-1)
+                {
+                    mData[mSize++] = input[currIndex];
+                }
             }
             
             size *= -1;
@@ -63,35 +53,28 @@ void RleData::Compress(const char* input, size_t inSize)
     
 }
 
-void RleData::same(const char*& first, const char*& second, int& currSize)
+void RleData::same(const char*& input, int& currIndex, const size_t inSize)
 {
-    char letter = *first;
+    char letter = input[currIndex];
     int size = 2;
-    int x = 2;
     bool same = true;
-    currSize +=2;
+    currIndex++;
     
-    while(same)
+    while(same && currIndex < inSize-1)
     {
-        first++;
-        second++;
-        
-        if(*first == *second)
+        if(input[currIndex] == input[currIndex+1] && size < 127)
         {
-            x++;
             size++;
-            currSize++;
+            currIndex++;
         }
         else {
             same = false;
         }
     }
     
-    
+    currIndex++;
     mData[mSize++] = size;
     mData[mSize++] = letter;
-    first++;
-    second++;
 }
 
 void RleData::Decompress(const char* input, size_t inSize, size_t outSize)

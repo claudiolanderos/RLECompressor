@@ -27,7 +27,8 @@ public:
         TEST_CASE_DESCRIBE(testLongPositiveRuns, "Long positive runs test");
         TEST_CASE_DESCRIBE(testLongNegativeRuns, "Long negative runs test");
         TEST_CASE_DESCRIBE(testAlternatingPositiveNegativeRuns, "alternating runs test");
-        TEST_CASE_DESCRIBE(testReallyLongPositiveRun, "really long runs test");
+        TEST_CASE_DESCRIBE(testReallyLongPositiveRun, "Really long positive run test");
+        TEST_CASE_DESCRIBE(testReallyLongNegativeRun, "Really long negative run test");
         TEST_CASE_DESCRIBE(testSingleCharacterRun, "Single character run test");
         TEST_CASE_DESCRIBE(testSingleCharacterPositiveRun, "Single character positive run test");
         TEST_CASE_DESCRIBE(testSingleCharacterEnding, "Single character ending run test");
@@ -145,10 +146,48 @@ public:
                     "bbbbbbbbbb"
                     "bbbbbbbbbb"
                     "bbbbbbbbbb"
-                    "bbbbbbbbbb"
-                    "bbbbbbbbbb";
+                    "bbbbbbb"
+                    "bbb"
+                    "bbbbbbb";
         
-        char expected[] = "\x8C" "b";
+        char expected[] = "\x7F" "b" "\xA" "b";
+        
+        runCompressionTest(test, sizeof(test) -1, expected, sizeof(expected) -1);
+    }
+    
+    void testReallyLongNegativeRun()
+    {
+        char test[] =   "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyuiop"
+                        "qwertyu"
+                        "qwertyuiop"
+                        "qwertyuiop";
+        
+        char expected[] = "\x81"    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyuiop"
+                                    "qwertyu"
+                             "\xEC" "qwertyuiop"
+                                    "qwertyuiop";
         
         runCompressionTest(test, sizeof(test) -1, expected, sizeof(expected) -1);
     }
@@ -249,6 +288,89 @@ public:
                             "aaaaaaaaaa";
         
         runDecompressionTest(test, sizeof(test) - 1, expected, sizeof(expected) - 1);
+    }
+    
+    void testReallyLongPositiveRun()
+    {
+        char test[] =
+        "\x7F" "b" "\xA" "b";
+        
+        char expected[] = "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbbbbb"
+        "bbbbbbb"
+        "bbb"
+        "bbbbbbb";
+        
+        runCompressionTest(test, sizeof(test) -1, expected, sizeof(expected) -1);
+    }
+    
+    void testReallyLongNegativeRun()
+    {
+        char test[] =
+        
+        "\x81"    "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyu"
+        "\xEC" "qwertyuiop"
+        "qwertyuiop";
+        
+        char expected[] = "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyuiop"
+        "qwertyu"
+        "qwertyuiop"
+        "qwertyuiop";
+        
+        runCompressionTest(test, sizeof(test) -1, expected, sizeof(expected) -1);
+    }
+    
+    void testSingleCharacterRun()
+    {
+        char test[] = "\x01" "a";
+        
+        char expected[] = "a";
+        
+        runCompressionTest(test, sizeof(test) -1, expected, sizeof(expected) -1);
+    }
+    
+    void testSingleCharacterPositiveRun()
+    {
+        char test[] = "\x03" "b"
+        "\x01" "a"
+        "\x03" "c";
+        
+        char expected[] = "bbbaccc";
+        
+        runCompressionTest(test, sizeof(test) -1, expected, sizeof(expected) -1);
     }
     
 };
