@@ -33,5 +33,8 @@ struct RleData
 		// Bitwise magic
 		return 127;
 	}
+    
+private:
+    void same(const char*& first, const char*& second, int& currSize);
 };
 
